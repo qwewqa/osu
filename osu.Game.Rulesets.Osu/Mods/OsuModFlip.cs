@@ -17,7 +17,7 @@ namespace osu.Game.Rulesets.Osu.Mods
         public override string ShortenedName => "FP";
         public override FontAwesome Icon => FontAwesome.fa_arrows_h;
         public override ModType Type => ModType.Fun;
-        public override string Description => "Circles flip around. No approach circles.";
+        public override string Description => "Everything flips";
         public override double ScoreMultiplier => 1;
 
         public void ApplyToDrawableHitObjects(IEnumerable<DrawableHitObject> drawables)
