@@ -7,7 +7,6 @@ using osu.Game.Graphics;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Osu.Objects;
-using osu.Game.Rulesets.Osu.Objects.Drawables;
 using OpenTK;
 
 namespace osu.Game.Rulesets.Osu.Mods
@@ -25,47 +24,20 @@ namespace osu.Game.Rulesets.Osu.Mods
         {
             foreach (var drawable in drawables)
             {
-                drawable.ApplyCustomUpdateState += ApplyBounceState;
-            }
-        }
+                var h = (OsuHitObject)drawable.HitObject;
 
-        protected void ApplyBounceState(DrawableHitObject drawable, ArmedState state)
-        {
-            if (!(drawable is DrawableOsuHitObject)) return;
-            if (state != ArmedState.Idle) return;
+                // +/- 1 so that the transforms happen right before they actually appear
+                var appearTime = h.StartTime - h.TimePreempt -1;
+                var moveDuration = h.TimePreempt + 1;
 
-            var h = (OsuHitObject)drawable.HitObject;
-            // +/- 1 so that these appear right
-            var appearTime = h.StartTime - h.TimePreempt -1;
-            var moveDuration = h.TimePreempt + 1;
+                using (drawable.BeginAbsoluteSequence(appearTime, true))
+                {
+                    var origScale = drawable.Scale;
 
-            switch (drawable)
-            {
-                case DrawableHitCircle circle:
-                    using (circle.BeginAbsoluteSequence(appearTime, true))
-                    {
-                        var origScale = drawable.Scale;
-
-                        circle
-                            .ScaleTo(origScale * new Vector2(-1.0f, 1.0f))
-                            .ScaleTo(origScale, moveDuration, Easing.InOutSine);
-                    }
-
-                    circle.ApproachCircle.Hide();
-
-                    break;
-
-                case DrawableSlider slider:
-                    using (slider.BeginAbsoluteSequence(appearTime, true))
-                    {
-                        var origScale = slider.Scale;
-
-                        slider
-                            .ScaleTo(origScale * new Vector2(-1.0f, 1.0f))
-                            .ScaleTo(origScale, moveDuration, Easing.InOutSine);
-                    }
-
-                    break;
+                    drawable
+                        .ScaleTo(origScale * new Vector2(-1.0f, 1.0f))
+                        .ScaleTo(origScale, moveDuration, Easing.InOutSine);
+                }
             }
         }
     }
